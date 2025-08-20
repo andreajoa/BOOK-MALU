@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>As Aventuras da Malu - Volume 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc8 30%, #f8bbd9 60%, #e1bee7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            animation: backgroundShift 25s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background: linear-gradient(135deg, #a8e6cf 0%, #dcedc8 30%, #f8bbd9 60%, #e1bee7 100%); }
+            25% { background: linear-gradient(135deg, #ffd3a5 0%, #fd9853 30%, #a8e6cf 60%, #dcedc8 100%); }
+            50% { background: linear-gradient(135deg, #c2e9fb 0%, #a1c4fd 30%, #f8bbd9 60%, #e1bee7 100%); }
+            75% { background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 30%, #a8e6cf 60%, #c2e9fb 100%); }
+        }
+
+        .book-container {
+            perspective: 2000px;
+            width: 900px;
+            height: 600px;
+            position: relative;
+        }
+
+        .book {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .page {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            transform-origin: left center;
+            transition: transform 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+            backface-visibility: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.4);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.1);
+            z-index: 1;
+            backdrop-filter: blur(3px);
+        }
+
+        .page-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-left {
+            left: 0;
+            z-index: 100;
+        }
+
+        .page-right {
+            right: 0;
+            z-index: 100;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+            z-index: 1;
+        }
+
+        .illustration {
+            width: 100%;
+            height: 70%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .text {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #2d3436;
+            margin: 15px 0;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 1.1em;
+            color: #6c5ce7;
+            background: rgba(255,255,255,0.95);
+            padding: 8px 15px;
+            border-radius: 20px;
+            z-index: 3;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        /* CAPA */
+        .cover {
+            background: linear-gradient(135deg, #a8e6cf 0%, #ffd3a5 25%, #f8bbd9 50%, #c2e9fb 75%, #e1bee7 100%);
+            color: #2d3436;
+        }
+
+        .cover h1 {
+            font-size: 2.5em;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            color: #6c5ce7;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+            animation: titleFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .cover .subtitle {
+            font-size: 1.2em;
+            margin: 15px 0;
+            font-style: italic;
+            color: #74b9ff;
+        }
+
+        .cover .author {
+            font-size: 1em;
+            margin-top: 20px;
+            border: 2px solid #6c5ce7;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.9);
+            color: #6c5ce7;
+        }
+
+        /* Backgrounds das páginas */
+        .morning-bg {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 50%, #fd79a8 100%);
+        }
+
+        .home-bg {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc8 50%, #c2e9fb 100%);
+        }
+
+        .hospital-bg {
+            background: linear-gradient(135deg, #c2e9fb 0%, #a1c4fd 50%, #74b9ff 100%);
+        }
+
+        .uti-bg {
+            background: linear-gradient(135deg, #e1bee7 0%, #ba68c8 50%, #9c27b0 100%);
+        }
+
+        .emotional-bg {
+            background: linear-gradient(135deg, #f8bbd9 0%, #f48fb1 50%, #e91e63 100%);
+        }
+
+        .discovery-bg {
+            background: linear-gradient(135deg, #dcedc8 0%, #a8e6cf 50%, #4caf50 100%);
+        }
+
+        .character {
+            font-size: 5em;
+            filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.2));
+            animation: float 6s ease-in-out infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) translateY(-10px) rotate(2deg); }
+            75% { transform: translate(-50%, -50%) translateY(10px) rotate(-2deg); }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 25px;
+            z-index: 1000;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #74b9ff, #6c5ce7);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.3);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #6c5ce7, #74b9ff);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-counter {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #74b9ff, #6c5ce7);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.3);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .flip-hint {
+            position: absolute;
+            top: 50%;
+            right: -50px;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #fd79a8, #f48fb1);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            animation: pulse 3s infinite;
+            pointer-events: none;
+            z-index: 4;
+            box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: translateY(-50%) scale(1); }
+            50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+        }
+
+        .dramatic-text {
+            font-weight: bold;
+            color: #6c5ce7;
+            font-style: italic;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #2d3436;
+            border-left: 3px solid #74b9ff;
+            padding-left: 15px;
+            margin: 10px 0;
+            background: rgba(116, 185, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 8px;
+        }
+
+        .to-be-continued {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #6c5ce7;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 20px 0;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { 
+                text-shadow: 0 0 10px #74b9ff;
+                transform: scale(1);
+            }
+            to { 
+                text-shadow: 0 0 20px #6c5ce7, 0 0 30px #74b9ff;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Decorative sparkles */
+        .sparkle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: sparkle 4s infinite linear;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .sparkle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 70%; right: 25%; animation-delay: 1.5s; }
+        .sparkle:nth-child(3) { bottom: 25%; left: 30%; animation-delay: 3s; }
+        .sparkle:nth-child(4) { top: 45%; right: 35%; animation-delay: 2s; }
+
+        @media (max-width: 768px) {
+            .book-container {
+                width: 95vw;
+                height: 60vh;
+            }
+            
+            .page {
+                padding: 15px;
+            }
+            
+            .illustration {
+                height: 60%;
+            }
+            
+            .character {
+                font-size: 3em;
+            }
+            
+            .text {
+                font-size: 0.9em;
+                padding: 12px 15px;
+            }
+            
+            .cover h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-counter">
+        <span id="currentPage">1</span> / <span id="totalPages">18</span>
+    </div>
+
+    <div class="book-container">
+        <div class="book" id="book">
+            <!-- CAPA -->
+            <div class="page page-right cover" data-page="0">
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🌸👧💕</div>
+                    </div>
+                    <h1>As Aventuras da Malu</h1>
+                    <div class="subtitle">Volume 1: O Sábado que Mudou Tudo</div>
+                    <div class="author">Uma história de coragem e amor</div>
+                </div>
+                <div class="flip-hint">Clique para começar →</div>
+            </div>
+
+            <!-- PÁGINA 1 -->
+            <div class="page page-right morning-bg" data-page="1">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">☀️🏠💛</div>
+                    </div>
+                    <div class="text">
+                        Era um sábado perfeito de outubro. Malu, de 12 anos, desenhava borboletas em seu quarto quando algo estranho aconteceu...
+                    </div>
+                </div>
+                <div class="page-number">1</div>
+            </div>
+
+            <!-- PÁGINA 2 -->
+            <div class="page page-right home-bg" data-page="2">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">💧😰🌊</div>
+                    </div>
+                    <div class="text">
+                        Há semanas Malu sentia uma sede insaciável. Sua mãe Ana pensou: <span class="quote">"Deve ser o crescimento"</span>. Mas naquele sábado, algo estava muito diferente.
+                    </div>
+                </div>
+                <div class="page-number">2</div>
+            </div>
+
+            <!-- PÁGINA 3 -->
+            <div class="page page-right emotional-bg" data-page="3">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">😱🚨💔</div>
+                    </div>
+                    <div class="text">
+                        <span class="dramatic-text">"MÃE!"</span> O grito ecoou pela casa. Ana encontrou Malu no chão, pálida e com dificuldade para respirar.
+                    </div>
+                </div>
+                <div class="page-number">3</div>
+            </div>
+
+            <!-- PÁGINA 4 -->
+            <div class="page page-right hospital-bg" data-page="4">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🚗💨🏥</div>
+                    </div>
+                    <div class="text">
+                        A corrida para o hospital nunca pareceu tão longa. Ana dirigia com lágrimas nos olhos, repetindo: <span class="quote">"Aguenta, meu amor"</span>.
+                    </div>
+                </div>
+                <div class="page-number">4</div>
+            </div>
+
+            <!-- PÁGINA 5 -->
+            <div class="page page-right hospital-bg" data-page="5">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🏥⚡👩‍⚕️</div>
+                    </div>
+                    <div class="text">
+                        <span class="quote">"EMERGÊNCIA!"</span> gritou Ana. Em segundos, uma equipe médica cercou Malu. A porta se fechou, separando mãe e filha.
+                    </div>
+                </div>
+                <div class="page-number">5</div>
+            </div>
+
+            <!-- PÁGINA 6 -->
+            <div class="page page-right discovery-bg" data-page="6">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">📊🔬⚠️</div>
+                    </div>
+                    <div class="text">
+                        <span class="dramatic-text">"Glicemia: 752 mg/dL"</span> O Dr. Rodrigues franziu a testa. <span class="quote">"Cetoacidose diabética severa. Precisamos da UTI, agora!"</span>
+                    </div>
+                </div>
+                <div class="page-number">6</div>
+            </div>
+
+            <!-- PÁGINA 7 -->
+            <div class="page page-right uti-bg" data-page="7">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🏥💜🛏️</div>
+                    </div>
+                    <div class="text">
+                        A UTI pediátrica era colorida e acolhedora. Malu estava conectada a fios que pareciam fitas mágicas cuidando dela. Ana sussurrou: <span class="quote">"Mamãe está aqui"</span>.
+                    </div>
+                </div>
+                <div class="page-number">7</div>
+            </div>
+
+            <!-- PÁGINA 8 -->
+            <div class="page page-right uti-bg" data-page="8">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">👩‍⚕️📋💙</div>
+                    </div>
+                    <div class="text">
+                        <span class="quote">"Sra. Ana, Malu tem diabetes tipo 1. Com tratamento, ela viverá normalmente"</span>, explicou o médico. Ana sentiu o mundo girar.
+                    </div>
+                </div>
+                <div class="page-number">8</div>
+            </div>
+
+            <!-- PÁGINA 9 -->
+            <div class="page page-right emotional-bg" data-page="9">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🌙💕🤱</div>
+                    </div>
+                    <div class="text">
+                        Durante a noite, Ana segurou a mão de Malu: <span class="quote">"Lembra dos nossos momentos de carinho? Mamãe vai ficar aqui até você acordar"</span>.
+                    </div>
+                </div>
+                <div class="page-number">9</div>
+            </div>
+
+            <!-- PÁGINA 10 -->
+            <div class="page page-right discovery-bg" data-page="10">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">👁️✨🦋</div>
+                    </div>
+                    <div class="text">
+                        No segundo dia, milagrosamente, os olhos de Malu se abriram como pétalas ao amanhecer. <span class="quote">"Mãe?"</span> <span class="dramatic-text">"EU ESTOU AQUI!"</span>
+                    </div>
+                </div>
+                <div class="page-number">10</div>
+            </div>
+
+            <!-- PÁGINA 11 -->
+            <div class="page page-right emotional-bg" data-page="11">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">❓😰💭</div>
+                    </div>
+                    <div class="text">
+                        <span class="quote">"Diabetes? Eu vou ter que tomar injeção todo dia?"</span> Malu estava assustada. Ana entrelaçou seus dedos: <span class="quote">"Vamos aprender juntas"</span>.
+                    </div>
+                </div>
+                <div class="page-number">11</div>
+            </div>
+
+            <!-- PÁGINA 12 -->
+            <div class="page page-right uti-bg" data-page="12">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">👩‍⚕️🌟💖</div>
+                    </div>
+                    <div class="text">
+                        A enfermeira Carla se aproximou: <span class="quote">"Oi Malu! Eu também tenho diabetes há 15 anos. Este medidor é meu melhor amigo!"</span> Malu esboçou seu primeiro sorriso.
+                    </div>
+                </div>
+                <div class="page-number">12</div>
+            </div>
+
+            <!-- PÁGINA 13 -->
+            <div class="page page-right emotional-bg" data-page="13">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🌙💭✨</div>
+                    </div>
+                    <div class="text">
+                        Era madrugada quando Malu acordou pensativa. <span class="quote">"Mãe, eu tenho medo. E se for muito difícil?"</span> <span class="dramatic-text">O futuro parecia incerto.</span>
+                    </div>
+                </div>
+                <div class="page-number">13</div>
+            </div>
+
+            <!-- PÁGINA 14 -->
+            <div class="page page-right emotional-bg" data-page="14">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">💬❤️🌟</div>
+                    </div>
+                    <div class="text">
+                        Ana se deitou ao lado da filha: <span class="quote">"Quando você nasceu, aprendi que somos mais fortes do que imaginamos. Vamos enfrentar isso juntas, passo a passo"</span>.
+                    </div>
+                </div>
+                <div class="page-number">14</div>
+            </div>
+
+            <!-- PÁGINA 15 -->
+            <div class="page page-right discovery-bg" data-page="15">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">📚🎯💡</div>
+                    </div>
+                    <div class="text">
+                        O Dr. Rodrigues trouxe materiais educativos: <span class="quote">"Malu, você vai se tornar uma expert no seu próprio corpo. Vai aprender tudo sobre insulina e alimentação"</span>.
+                    </div>
+                </div>
+                <div class="page-number">15</div>
+            </div>
+
+            <!-- PÁGINA 16 -->
+            <div class="page page-right discovery-bg" data-page="16">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🤔💪🌈</div>
+                    </div>
+                    <div class="text">
+                        Malu começou a perceber que aquilo não era apenas sobre doença. <span class="dramatic-text">Era sobre se tornar protagonista da própria vida, descobrir sua força interior.</span>
+                    </div>
+                </div>
+                <div class="page-number">16</div>
+            </div>
+
+            <!-- PÁGINA 17 -->
+            <div class="page page-right emotional-bg" data-page="17">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">🌅💖🦋</div>
+                    </div>
+                    <div class="text">
+                        No quarto dia, Malu olhou pela janela da UTI. <span class="quote">"Mãe, quando eu sair daqui, quero desenhar uma borboleta diferente. Uma que aprendeu a voar de uma forma nova"</span>.
+                    </div>
+                </div>
+                <div class="page-number">17</div>
+            </div>
+
+            <!-- PÁGINA 18 - CONTINUAÇÃO -->
+            <div class="page page-right morning-bg" data-page="18">
+                <div class="page-content">
+                    <div class="illustration">
+                        <div class="character">📖✨🌟</div>
+                    </div>
+                    <div class="text">
+                        <div class="to-be-continued">Continua...</div>
+                        <br>
+                        Esta é apenas o começo da jornada de Malu. Sua aventura no hospital ainda reserva muitas descobertas, novos amigos e lições de vida.
+                        <br><br>
+                        <span class="dramatic-text">Aguarde o Volume 2: "Malu Descobre Sua Força"</span>
+                    </div>
+                </div>
+                <div class="page-number">18</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="prevBtn" onclick="previousPage()" disabled>← Anterior</button>
+        <button class="btn" id="nextBtn" onclick="nextPage()">Próxima →</button>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const totalPages = 18;
+        const pages = document.querySelectorAll('.page');
+        
+        document.getElementById('totalPages').textContent = totalPages;
+
+        function updatePageCounter() {
+            document.getElementById('currentPage').textContent = currentPage + 1;
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage === totalPages - 1;
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages - 1) {
+                pages[currentPage].classList.add('flipped');
+                currentPage++;
+                updatePageCounter();
+                updateButtons();
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                pages[currentPage].classList.remove('flipped');
+                updatePageCounter();
+                updateButtons();
+            }
+        }
+
+        // Click na página para avançar
+        pages.forEach((page, index) => {
+            page.addEventListener('click', (e) => {
+                if (e.target.closest('.flip-hint') || e.target === page) {
+                    if (index === currentPage && currentPage < totalPages - 1) {
+                        nextPage();
+                    }
+                }
+            });
+        });
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextPage();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousPage();
+            }
+        });
+
+        // Inicializar
+        updatePageCounter();
+        updateButtons();
+    </script>
+</body>
+</html>
